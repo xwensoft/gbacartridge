@@ -9,7 +9,7 @@
 //              VCC5.0 -------- VCC
 // /WD
 // /RD -------- PA11
-// /CS
+// /CS -------- PA12
 // AD0~AD15 --- PC0~PC15
 // A16~A23  --- PA8~PA15
 // /CS2
@@ -27,6 +27,8 @@
 #define DATA_OUT GPIOE->ODR
 #define SET_DATA_MODE_IN GPIOE->MODER = 0x00000000;
 #define SET_DATA_MODE_OUT GPIOE->MODER = 0x55550000;
+
+u16 addr = 0x0;
 
 // 在GBA画一条直线，已经包含GBA Header
 u8 const rom[] = {
@@ -122,8 +124,6 @@ void delay_ms(u16 nms)
   SysTick->VAL = 0X00;                          //清空计数器
 }
 
-void SetInput();
-void SetOutput();
 
 int main(int argc, char *argv[])
 {
@@ -180,6 +180,11 @@ int main(int argc, char *argv[])
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
   //USART1配置
   USART_InitTypeDef USART_InitStructure;
 
@@ -228,10 +233,11 @@ void EXTI15_10_IRQHandler(void)
   {
     EXTI_ClearITPendingBit(EXTI_Line11); //清除标志
 
-    asm("nop");
-    asm("nop");
-    uint16_t dat = GPIO_ReadInputData(GPIOC);
-    USART_SendData(USART1, dat >> 8);
-    USART_SendData(USART1, dat & 0xFF);
+    // asm("nop");
+    // asm("nop");
+
+    if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_12)) {
+    USART_SendData(USART1, GPIOC->IDR);
+    }
   }
 }

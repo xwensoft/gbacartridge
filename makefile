@@ -2,7 +2,8 @@
 PROJECT_NAME := gbacartridge
 
 # 编译工具
-SDK_PATH := /Users/xuwen/Documents/gcc-arm-none-eabi/bin/
+# SDK_PATH := /Users/xuwen/Documents/gcc-arm-none-eabi/bin/
+SDK_PATH := /Applications/gcc-arm-none-eabi/sdk/bin/
 
 # 参与编译的源文件列表
 SOURCE := system/src/newlib/_cxx.cpp \
